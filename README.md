@@ -1,149 +1,106 @@
 # Fake Account Detector
 
-A Flask-based web app that analyzes Instagram account signals and predicts whether an account is likely fake or real.
+[![Python](https://img.shields.io/badge/Python-3.14%2B-FFB300?style=for-the-badge&logo=python&logoColor=111111)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.1-111111?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.8-FF6F00?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
+[![Playwright](https://img.shields.io/badge/Playwright-1.58-00C853?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/python/)
+[![Model Accuracy](https://img.shields.io/badge/Model_Accuracy-97.07%25-00ACC1?style=for-the-badge)](model/metrics.json)
+[![Last Updated](https://img.shields.io/badge/Last_Updated-2026--03--27-FF5722?style=for-the-badge&logo=github&logoColor=white)](README.md)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-2962FF?style=for-the-badge)](README.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-FDD835?style=for-the-badge)](LICENSE)
 
-## Project Overview and Features
+Detect suspicious Instagram accounts using a trained machine learning model and a simple Flask web app.
 
-- Web UI for manual account signal input
-- Optional Instagram profile fetch by username
-- ML model prediction (`Fake` or `Real`)
-- Verdict generation with risk score and reasoning
-- Training script for rebuilding the model from dataset CSV
+## What This Project Does
 
-## Project Structure
+- Predicts whether an account is `Fake` or `Real` based on account metadata.
+- Generates a practical verdict (`High Risk Fake`, `Suspicious`, `Likely Genuine`, or `Needs Review`) with a risk score.
+- Supports both:
+  - manual input from the UI
+  - optional profile fetch from Instagram by username
 
-- `app.py`: Flask server and API routes
-- `model.py`: model training script
-- `utils/features.py`: feature extraction for inference
-- `utils/verdict.py`: confidence-to-verdict logic
-- `utils/instagram_fetch.py`: live Instagram profile fetch logic
-- `templates/index.html`: main page
-- `static/style.css`: UI styles
-- `static/app.js`: frontend logic
-- `data/instagram_dataset.csv`: training dataset
-- `model/account_model.pkl`: trained model artifact
-- `model/metrics.json`: training metrics
+## Core Features
 
-## Requirements
+- Flask API + frontend dashboard
+- RandomForest-based classifier
+- Feature engineering for account signals (username pattern, bio length, follower/following ratio, etc.)
+- Training pipeline with saved model artifact and metrics
+
+
+## Tech Stack
 
 - Python 3.14+
-- Linux/macOS/Windows
+- Flask
+- scikit-learn
+- pandas / numpy
+- Playwright + BeautifulSoup4 (for profile fetch)
 
-Dependencies are declared in `pyproject.toml`.
 
-## Setup Instructions (uv Recommended)
+## Quick Start
 
-### Option 2: Using `pip`
+### 1. Create and activate a virtual environment
+
+Windows (PowerShell):
 
 ```bash
-uv venv
-source .venv/bin/activate //for linux
-.venv\Scripts\Activate.ps1 //for windows
-uv sync
-uv add "package name"
+python -m venv .venv
+.venv\Scripts\Activate.ps1
 ```
 
-Note: if your environment does not include a `requirements.txt`, use `uv sync` from Option 1.
-# playwright init 
+macOS/Linux:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Install dependencies
+
+Using `uv` (recommended for this project setup):
+
+```bash
+uv sync
+```
+
+
+
+### 3. Install Playwright browser binaries
+
 ```bash
 python -m playwright install
 ```
-## Model Training Commands (using `model.py`)
 
-Run training with defaults:
+### 4. Train model (if missing or if retraining)
 
 ```bash
 python model.py
 ```
 
-Custom paths:
+This generates:
 
-```bash
-python model.py \
-  --data data/instagram_dataset.csv \
-  --model-out model/account_model.pkl \
-  --metrics-out model/metrics.json
-```
+- `model/account_model.pkl`
+- `model/metrics.json`
 
-Current model accuracy (from `model/metrics.json`):
-
-- `97.07%`
-
-## App Run Instructions (using `app.py`)
+### 5. Run the app
 
 ```bash
 python app.py
 ```
 
-By default, server runs on:
+Open: `http://127.0.0.1:5000`
 
-- `http://127.0.0.1:5000`
+## Model Performance
 
-## API Endpoint Summary
+Current metrics in `model/metrics.json`:
 
-### `POST /api/analyze`
+- Accuracy: `0.9707`
+- Precision: `0.9714`
+- Recall: `0.8500`
+- F1: `0.9067`
 
-Analyzes account metadata and returns prediction + verdict.
+## Notes and Limitations
 
-Request JSON:
-
-```json
-{
-  "username": "example_user",
-  "bio": "some bio",
-  "followers_count": 120,
-  "following_count": 300,
-  "media_count": 20,
-  "has_profile_pic": 1
-}
-```
-
-Response fields include:
-
-- `prediction`
-- `confidence`
-- `verdict`
-- `risk_score`
-- `reasoning`
-
-### `POST /api/fetch-instagram`
-
-Fetches profile metadata for a username.
-
-### `GET /health`
-
-Simple health check endpoint.
-
-## Troubleshooting
-
-### Port already in use (`5000`)
-
-If you see "Port 5000 is in use", either stop the existing process or run on another port.
-
-Quick Linux check:
-
-```bash
-lsof -i :5000
-```
-
-Then stop the PID if needed:
-
-```bash
-kill <PID>
-```
-
-### Model load error on startup
-
-Make sure `model/account_model.pkl` exists. If not, run:
-
-```bash
-python model.py
-```
-
-## Practical Notes on Usage Limits
-
-- This tool is a screening assistant, not final identity verification.
-- Predictions depend on training data quality and may not generalize to all account patterns.
-- Live profile fetch can fail for private, blocked, rate-limited, or region-restricted profiles.
-- Confidence scores indicate model certainty, not guaranteed truth.
-- Always perform manual review before taking moderation, compliance, or legal action.
+- This is a screening aid, not a definitive identity verification system.
+- Scraping-based Instagram fetch can fail due to private profiles, anti-bot protections, rate limits, or layout changes.
+- Prediction confidence is model certainty, not ground truth.
+- Use manual review before moderation or policy decisions.
