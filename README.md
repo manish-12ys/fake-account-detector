@@ -33,22 +33,21 @@ Dependencies are declared in `pyproject.toml`.
 
 ## Setup Instructions (uv Recommended)
 
-### Option 1: Using `uv` (recommended)
-
-```bash
-uv sync
-```
-
 ### Option 2: Using `pip`
 
 ```bash
 uv venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
+source .venv/bin/activate //for linux
+.venv\Scripts\Activate.ps1 //for windows
+uv sync
+uv add "package name"
 ```
 
 Note: if your environment does not include a `requirements.txt`, use `uv sync` from Option 1.
-
+# playwright init 
+```bash
+python -m playwright install
+```
 ## Model Training Commands (using `model.py`)
 
 Run training with defaults:
@@ -65,40 +64,6 @@ python model.py \
   --model-out model/account_model.pkl \
   --metrics-out model/metrics.json
 ```
-
-## Temporary Graphs and Tables
-
-This project now includes a temporary reporting script to generate:
-
-- Model graph (feature importance)
-- Model training data table preview
-- Training vs testing data graph
-- Accuracy graph
-- Model accuracy summary JSON
-
-Script path:
-
-- `temporary/generate_model_reports.py`
-
-Run it:
-
-```bash
-python temporary/generate_model_reports.py
-```
-
-Output folder (default):
-
-- `temporary/model_reports/`
-
-Generated files:
-
-- `model_graph_feature_importance.png`
-- `model_train_data_table.csv`
-- `model_train_data_table.md`
-- `model_train_data_table.png`
-- `training_vs_testing_data_graph.png`
-- `accuracy_graph.png`
-- `model_accuracy_summary.json`
 
 Current model accuracy (from `model/metrics.json`):
 
