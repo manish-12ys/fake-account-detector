@@ -91,7 +91,7 @@ def fetch_instagram():
         if profile is None:
             return jsonify({
                 "success": False,
-                "error": error or "Could not fetch Instagram profile. Profile may be private or not exist."
+                "error": "Could not fetch Instagram profile. Profile may be private or not exist."
             }), 400
         
         profile_dict = profile.to_dict()
