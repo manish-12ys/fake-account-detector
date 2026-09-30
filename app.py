@@ -103,7 +103,8 @@ def fetch_instagram():
             "profile": profile_dict,
         })
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 400
+        app.logger.exception("Unexpected error while fetching Instagram profile")
+        return jsonify({"success": False, "error": "An internal error has occurred."}), 500
 
 
 # Health check
