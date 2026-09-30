@@ -217,10 +217,9 @@ def _fetch_via_playwright_sync(
         except RuntimeError:
             # No running loop, safe to use asyncio.run()
             return asyncio.run(_fetch_via_playwright(username, headless))
-    except Exception as e:
-        error_msg = f"Playwright sync wrapper error: {str(e)}"
-        logger.warning(error_msg)
-        return None, error_msg
+    except Exception:
+        logger.exception("Playwright sync wrapper error")
+        return None, "Unable to fetch Instagram profile at this time."
 
 
 def fetch_instagram_profile(
@@ -257,9 +256,9 @@ def fetch_instagram_profile(
         import concurrent.futures
         if isinstance(result, concurrent.futures.Future):
             return result.result(timeout=60)
-    except Exception as e:
-        logger.warning(f"Playwright method failed: {e}")
-        return None, str(e)
+    except Exception:
+        logger.exception("Playwright method failed")
+        return None, "Unable to fetch Instagram profile at this time."
     
     return None, "Unable to fetch Instagram profile"
 
