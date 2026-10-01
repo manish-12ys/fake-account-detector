@@ -8,6 +8,7 @@ dependencies = [
     "altair<5",
     "beautifulsoup4>=4.14.3",
     "flask>=3.1.3",
+    "gunicorn>=26.2.0",
     "impo>=1.1.1",
     "instagramy>=4.5",
     "instagrapi>=2.3.0",
