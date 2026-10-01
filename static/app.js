@@ -31,6 +31,13 @@ async function fetchInstagram() {
 
     const fetchBtn = document.getElementById('fetch-btn');
     const originalText = fetchBtn.innerHTML;
+
+    // Hide the previous result immediately so a failed refresh cannot leave stale data visible.
+    const profileDiv = document.getElementById('fetched-profile');
+    const profileData = document.getElementById('profile-data');
+    profileDiv.classList.add('hidden');
+    profileData.textContent = '';
+
     fetchBtn.disabled = true;
     fetchBtn.innerHTML = 'Fetching (may take up to 30s)...';
     
@@ -80,21 +87,49 @@ async function fetchInstagram() {
 
         // Populate form with fetched data
         document.getElementById('bio').value = profile.bio || '';
-        document.getElementById('followers').value = profile.followers_count || 0;
-        document.getElementById('following').value = profile.following_count || 0;
-        document.getElementById('posts').value = profile.media_count || 0;
+        document.getElementById('followers').value = profile.followers_count ?? 0;
+        document.getElementById('following').value = profile.following_count ?? 0;
+        document.getElementById('posts').value = profile.media_count ?? 0;
         document.getElementById('profile-pic').value = profile.profile_pic_url ? 1 : 0;
 
         // Show fetched profile with animation
-        const profileDiv = document.getElementById('fetched-profile');
-        const profileData = document.getElementById('profile-data');
-        profileData.innerHTML = `
-            <strong>@${profile.username}</strong><br>
-            Followers: <strong>${formatNumber(profile.followers_count)}</strong><br>
-            Following: <strong>${formatNumber(profile.following_count)}</strong><br>
-            Posts: <strong>${formatNumber(profile.media_count)}</strong><br>
-            Profile Picture: <strong>${profile.profile_pic_url ? 'Yes' : 'No'}</strong>
-        `;
+        const addProfileLine = (label, value, strong = false) => {
+            const line = document.createElement('div');
+            const labelNode = document.createTextNode(`${label}: `);
+            line.appendChild(labelNode);
+            if (strong) {
+                const valueNode = document.createElement('strong');
+                valueNode.textContent = value;
+                line.appendChild(valueNode);
+            } else {
+                line.appendChild(document.createTextNode(value));
+            }
+            profileData.appendChild(line);
+        };
+
+        const usernameNode = document.createElement('strong');
+        usernameNode.textContent = `@${profile.username}`;
+        profileData.appendChild(usernameNode);
+        addProfileLine('Followers', formatNumber(profile.followers_count), true);
+        addProfileLine('Following', formatNumber(profile.following_count), true);
+        addProfileLine('Posts', formatNumber(profile.media_count), true);
+        addProfileLine('Profile Picture', profile.profile_pic_url ? 'Yes' : 'No', true);
+
+        if (Array.isArray(profile.warnings) && profile.warnings.length > 0) {
+            const warnings = document.createElement('div');
+            warnings.className = 'profile-warnings';
+            const heading = document.createElement('strong');
+            heading.textContent = 'Warnings';
+            warnings.appendChild(heading);
+            const warningList = document.createElement('ul');
+            profile.warnings.forEach((warning) => {
+                const item = document.createElement('li');
+                item.textContent = warning;
+                warningList.appendChild(item);
+            });
+            warnings.appendChild(warningList);
+            profileData.appendChild(warnings);
+        }
         profileDiv.classList.remove('hidden');
         document.getElementById('skip-section').classList.add('hidden');
         
